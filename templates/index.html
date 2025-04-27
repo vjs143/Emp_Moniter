@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Control</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f4f4f9;
+            color: #333;
+        }
+        header {
+            background: #007BFF;
+            padding: 20px;
+            color: white;
+            text-align: center;
+        }
+        .container {
+            padding: 20px;
+        }
+        .employee-list {
+            list-style: none;
+            padding: 0;
+        }
+        .employee-item {
+            background: #fff;
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .employee-item h3 {
+            margin: 0;
+        }
+        .employee-item button {
+            background-color: #28a745;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .employee-item button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Employee Control Panel</h1>
+</header>
+
+<div class="container">
+    <h2>Connected Employees</h2>
+    <ul class="employee-list">
+        <!-- Employees will be listed here by Flask server -->
+        {% for key, employee in employees.items() %}
+        <li class="employee-item">
+            <h3>{{ key }}</h3>
+            <p>Status: Active</p>
+            <button onclick="sendCommand('{{ key }}')">Send Command</button>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<script>
+    function sendCommand(key) {
+        const command = prompt("Enter command for " + key, "click 100 200");
+        if (command) {
+            fetch("/send_command", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ key: key, command: command })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.ok) {
+                    alert("Command sent successfully!");
+                } else {
+                    alert("Failed to send command.");
+                }
+            });
+        }
+    }
+</script>
+
+</body>
+</html>
